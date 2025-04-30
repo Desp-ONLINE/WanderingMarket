@@ -1,0 +1,4 @@
+name: WanderingMarket
+version: '1.0-SNAPSHOT'
+main: org.desp.wanderingMarket.WanderingMarket
+api-version: '1.20'
