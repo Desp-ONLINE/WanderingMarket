@@ -2,20 +2,25 @@ package org.desp.wanderingMarket.database;
 
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.ReplaceOptions;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 import lombok.Getter;
 import org.bson.Document;
-import org.desp.sapphireMarket.dto.ItemDataDto;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.desp.wanderingMarket.WanderingMarket;
+import org.desp.wanderingMarket.dto.ItemDataDto;
 
 public class ItemDataRepository {
 
     private static ItemDataRepository instance;
     private final MongoCollection<Document> itemDataDB;
     @Getter
-    public Map<String, ItemDataDto> itemDataList = new HashMap<>();
+    public Map<Integer, ItemDataDto> itemDataList = new HashMap<>();
+    @Getter
+    public List<ItemDataDto> shuffledItemDataList = new ArrayList<>();
 
     public ItemDataRepository() {
         DatabaseRegister database = new DatabaseRegister();
@@ -29,53 +34,61 @@ public class ItemDataRepository {
         return instance;
     }
 
-    public void insertItemData(ItemDataDto newItemData) {
-        Document document = new Document()
-                .append("MMOItem_ID", newItemData.getMMOItem_ID())
-                .append("amount", newItemData.getAmount())
-                .append("price", newItemData.getPrice())
-                .append("userMaxPurchaseAmount", newItemData.getUserMaxPurchaseAmount())
-                .append("userDailyPurchaseAmount", newItemData.getUserDailyPurchaseAmount())
-                .append("serverMaxPurchaseAmount", newItemData.getServerMaxPurchaseAmount())
-                .append("slot", newItemData.getSlot());
-
-        itemDataDB.insertOne(document);
-    }
-
     public void loadItemData() {
         FindIterable<Document> documents = itemDataDB.find();
         for (Document document : documents) {
             ItemDataDto item = ItemDataDto.builder()
+                    .itemID(document.getInteger("itemID"))
                     .MMOItem_ID(document.getString("MMOItem_ID"))
                     .amount(document.getInteger("amount"))
                     .price(document.getInteger("price"))
+                    .appearancePercentage(document.getInteger("appearancePercentage"))
                     .userMaxPurchaseAmount(document.getInteger("userMaxPurchaseAmount"))
-                    .userDailyPurchaseAmount(document.getInteger("userDailyPurchaseAmount"))
-                    .serverMaxPurchaseAmount(document.getInteger("serverMaxPurchaseAmount"))
-                    .slot(document.getInteger("slot"))
                     .build();
 
-            itemDataList.put(item.getMMOItem_ID(), item);
+            itemDataList.put(item.getItemID(), item);
         }
     }
 
-    public void reduceServerMaxPurchaseAMount(ItemDataDto purchaseItemDataDto, int amount) {
-        purchaseItemDataDto.setServerMaxPurchaseAmount(purchaseItemDataDto.getServerMaxPurchaseAmount() - amount);
-        itemDataList.put(purchaseItemDataDto.getMMOItem_ID(), purchaseItemDataDto);
+//    public void startMarketRotationTask() {
+//        new BukkitRunnable() {
+//            @Override
+//            public void run() {
+//                getShuffledRandomItemDataList();
+//                ItemPurchaseMemoryLogRepository.getInstance().resetPurchaseMemoryLog();
+//            }
+//        }.runTaskTimer(WanderingMarket.getInstance(), 0L, 20L * 60 * 1); // 30분 간격
+//    }
 
-        Document document = new Document()
-                .append("MMOItem_ID", purchaseItemDataDto.getMMOItem_ID())
-                .append("amount", purchaseItemDataDto.getAmount())
-                .append("price", purchaseItemDataDto.getPrice())
-                .append("userMaxPurchaseAmount", purchaseItemDataDto.getUserMaxPurchaseAmount())
-                .append("userDailyPurchaseAmount", purchaseItemDataDto.getUserDailyPurchaseAmount())
-                .append("serverMaxPurchaseAmount", purchaseItemDataDto.getServerMaxPurchaseAmount())
-                .append("slot", purchaseItemDataDto.getSlot());
+    public void getShuffledRandomItemDataList() {
+        int randomSize = ThreadLocalRandom.current().nextInt(1, itemDataList.size());
 
-        itemDataDB.replaceOne(
-                Filters.eq("MMOItem_ID", purchaseItemDataDto.getMMOItem_ID()),
-                document,
-                new ReplaceOptions().upsert(true)
-        );
+        List<ItemDataDto> pool = new ArrayList<>(itemDataList.values());
+        List<ItemDataDto> result = new ArrayList<>();
+
+        for (int i = 0; i < randomSize && !pool.isEmpty(); i++) {
+            int totalWeight = pool.stream()
+                    .mapToInt(ItemDataDto::getAppearancePercentage)
+                    .sum();
+
+            int randomWeight = ThreadLocalRandom.current().nextInt(totalWeight);
+
+            int cumulative = 0;
+            ItemDataDto selected = null;
+
+            for (ItemDataDto item : pool) {
+                cumulative += item.getAppearancePercentage();
+                if (randomWeight < cumulative) {
+                    selected = item;
+                    break;
+                }
+            }
+
+            if (selected != null) {
+                result.add(selected);
+                pool.remove(selected);
+            }
+        }
+        shuffledItemDataList = result;
     }
 }

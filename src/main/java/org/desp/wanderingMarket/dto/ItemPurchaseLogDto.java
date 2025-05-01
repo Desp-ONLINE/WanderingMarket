@@ -9,7 +9,7 @@ import lombok.Setter;
 public class ItemPurchaseLogDto {
     private String user_id;
     private String uuid;
-    private String purchaseItemID;
+    private int purchaseItemID;
     private int amount;
     private int purchasePrice;
     private String purchaseTime;

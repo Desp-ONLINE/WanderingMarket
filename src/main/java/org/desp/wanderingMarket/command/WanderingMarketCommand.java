@@ -4,7 +4,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.desp.sapphireMarket.gui.SapphireMarketGUI;
+import org.desp.wanderingMarket.gui.WanderingMarketGUI;
 import org.jetbrains.annotations.NotNull;
 
 public class WanderingMarketCommand implements CommandExecutor {
@@ -15,9 +15,12 @@ public class WanderingMarketCommand implements CommandExecutor {
         if (!(commandSender instanceof Player player)) {
             return false;
         }
+        if (!player.isOp()) {
+            return false;
+        }
 
-        SapphireMarketGUI sapphireMarketGUI = new SapphireMarketGUI(player);
-        player.openInventory(sapphireMarketGUI.getInventory());
+        WanderingMarketGUI wanderingMarketGUI = new WanderingMarketGUI(player);
+        player.openInventory(wanderingMarketGUI.getInventory());
         return false;
     }
 }

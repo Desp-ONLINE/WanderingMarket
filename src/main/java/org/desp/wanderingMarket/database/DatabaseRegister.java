@@ -19,6 +19,6 @@ public class DatabaseRegister {
                 .build();
 
         this.mongoClient = MongoClients.create(settings);
-        this.database = mongoClient.getDatabase("Market");
+        this.database = mongoClient.getDatabase("WanderingMarket");
     }
 }

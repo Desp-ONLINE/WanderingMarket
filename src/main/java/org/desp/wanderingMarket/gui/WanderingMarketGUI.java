@@ -2,46 +2,60 @@ package org.desp.wanderingMarket.gui;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.desp.sapphireMarket.database.ItemDataRepository;
-import org.desp.sapphireMarket.database.ItemPurchaseLogRepository;
-import org.desp.sapphireMarket.dto.ItemDataDto;
-import org.desp.sapphireMarket.utils.ItemParser;
+import org.desp.wanderingMarket.WanderingMarket;
+import org.desp.wanderingMarket.database.ItemDataRepository;
+import org.desp.wanderingMarket.database.ItemPurchaseMemoryLogRepository;
+import org.desp.wanderingMarket.dto.ItemDataDto;
+import org.desp.wanderingMarket.utils.ItemParser;
+import org.desp.wanderingMarket.utils.TimeManager;
 import org.jetbrains.annotations.NotNull;
 
 public class WanderingMarketGUI implements InventoryHolder {
 
-    private Player player;
-    public Inventory inventory;
-
-    public WanderingMarketGUI(Player player) {
-        this.player = player;
+    static {
+        Bukkit.getScheduler().runTaskTimer(WanderingMarket.getInstance(), () -> {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                Inventory topInv = player.getOpenInventory().getTopInventory();
+                if (!(topInv.getHolder() instanceof WanderingMarketGUI gui)) {
+                    continue;
+                }
+                gui.refreshTimeItem();
+            }
+        }, 20, 20);
     }
 
-    @Override
-    public @NotNull Inventory getInventory() {
-        if (this.inventory == null) {
-            this.inventory = Bukkit.createInventory(this, 54, "사파이어샵");
-        }
-        Map<String, ItemDataDto> itemDataList = ItemDataRepository.getInstance().getItemDataList();
+    private final Player player;
+    private final Inventory inventory;
+    public WanderingMarketGUI(Player player) {
+        this.player = player;
+        this.inventory = create();
+        refreshTimeItem();
+    }
 
-        for (Entry<String, ItemDataDto> entry : itemDataList.entrySet()) {
-            String MMOItem_ID = entry.getKey();
-            ItemDataDto itemDto = entry.getValue();
+    private Inventory create() {
+        TextComponent title = Component.text("                     방랑 상인 상점");
+        Inventory inventory = Bukkit.createInventory(this, 27, title);
 
-            int slot = itemDto.getSlot();
+        List<ItemDataDto> shuffledItemDataList = ItemDataRepository.getInstance().getShuffledItemDataList();
 
-            int userTotalAmount = ItemPurchaseLogRepository.getInstance().countPurchaseLog(player, MMOItem_ID);
-            int userTodayAmount = ItemPurchaseLogRepository.getInstance().countTodayPurchaseLog(player, MMOItem_ID);
+        int slot = 10;
 
-            ItemStack item = ItemParser.getValidTypeItem(MMOItem_ID);
+        for (ItemDataDto itemDto : shuffledItemDataList) {
+            int userTotalAmount = ItemPurchaseMemoryLogRepository.getInstance()
+                    .countPurchaseLog(player, itemDto.getItemID());
+
+            ItemStack item = ItemParser.getValidTypeItem(itemDto.getMMOItem_ID());
             ItemStack cloneItem = item.clone();
             cloneItem.setAmount(itemDto.getAmount());
 
@@ -54,19 +68,8 @@ public class WanderingMarketGUI implements InventoryHolder {
 
             boolean isBlocked = false;
 
-            // 제한 조건 체크
             if (itemDto.getUserMaxPurchaseAmount() != -1 &&
-                    userTotalAmount + itemDto.getAmount() > itemDto.getUserMaxPurchaseAmount()) {
-                isBlocked = true;
-            }
-
-            if (itemDto.getUserDailyPurchaseAmount() != -1 &&
-                    userTodayAmount + itemDto.getAmount() > itemDto.getUserDailyPurchaseAmount()) {
-                isBlocked = true;
-            }
-
-            if (itemDto.getServerMaxPurchaseAmount() != -1 &&
-                    0 >= itemDto.getServerMaxPurchaseAmount()) {
+                    userTotalAmount + 1 > itemDto.getUserMaxPurchaseAmount()) {
                 isBlocked = true;
             }
 
@@ -80,21 +83,11 @@ public class WanderingMarketGUI implements InventoryHolder {
                 lore.add("");
             }
 
-            lore.add("§f가격: §e" + itemDto.getPrice() + " §a사파이어");
+            lore.add("§f가격: §e" + itemDto.getPrice() + " §a골드");
 
             if (itemDto.getUserMaxPurchaseAmount() != -1) {
                 int remainingUserTotal = Math.max(0, itemDto.getUserMaxPurchaseAmount() - userTotalAmount);
                 lore.add("§f개인 총 한정: §e" + remainingUserTotal + "/" + itemDto.getUserMaxPurchaseAmount());
-            }
-
-            if (itemDto.getUserDailyPurchaseAmount() != -1) {
-                int remainingToday = Math.max(0, itemDto.getUserDailyPurchaseAmount() - userTodayAmount);
-                lore.add("§f일일 한정: §e" + remainingToday + "/" + itemDto.getUserDailyPurchaseAmount());
-            }
-
-            if (itemDto.getServerMaxPurchaseAmount() != -1) {
-                int remainingServer = Math.max(0, itemDto.getServerMaxPurchaseAmount());
-                lore.add("§f서버 남은 수량: §e" + remainingServer);
             }
 
             lore.add("");
@@ -104,9 +97,35 @@ public class WanderingMarketGUI implements InventoryHolder {
             cloneItem.setItemMeta(cloneItemMeta);
 
             inventory.setItem(slot, cloneItem);
+            slot++;
         }
 
         return inventory;
     }
 
+    private void refreshTimeItem() {
+        ItemStack timeViewer = new ItemStack(Material.BLUE_STAINED_GLASS_PANE);
+        ItemMeta timeItemMeta = timeViewer.getItemMeta();
+
+        if (timeItemMeta != null) {
+            List<String> lore = new ArrayList<>();
+            // 여기만 수정하면 됩다
+
+            int remainingTime = TimeManager.getInstance().getRemainingTime();
+            int minutes = remainingTime / 60;
+            int seconds = remainingTime % 60;
+            lore.add("§f남은 시간: §e" + minutes + "분 " + seconds + "초");
+
+//            int remainingTime = TimeManager.getInstance().getRemainingTime();
+//            lore.add("§f남은 시간: §e" + remainingTime + "초");
+            timeItemMeta.setLore(lore);
+            timeViewer.setItemMeta(timeItemMeta);
+        }
+        inventory.setItem(0, timeViewer);
+    }
+
+    @Override
+    public @NotNull Inventory getInventory() {
+        return inventory;
+    }
 }

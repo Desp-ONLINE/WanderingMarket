@@ -9,5 +9,4 @@ import lombok.Setter;
 public class PlayerDataDto {
     private String user_id;
     private String uuid;
-    private int sapphireAmount;
 }
