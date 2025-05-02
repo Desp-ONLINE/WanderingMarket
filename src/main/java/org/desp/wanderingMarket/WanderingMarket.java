@@ -22,7 +22,6 @@ public final class WanderingMarket extends JavaPlugin {
         instance = this;
         NPCLocationDataRepository.getInstance().loadAllPlayerData();
         ItemDataRepository.getInstance().loadItemData();
-//        ItemDataRepository.getInstance().startMarketRotationTask();
 
         TimeManager.getInstance().startMarketRotationTask();
 
@@ -33,13 +32,10 @@ public final class WanderingMarket extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new ItemConfirmListener(), this);
 
         getCommand("방랑상인상점").setExecutor(new WanderingMarketCommand());
-        // Plugin startup logic
-
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
         PlayerDataRepository.getInstance().saveAllPlayerData();
     }
 }

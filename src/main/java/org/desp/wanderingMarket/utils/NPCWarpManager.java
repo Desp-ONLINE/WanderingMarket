@@ -30,12 +30,9 @@ public class NPCWarpManager {
         double pitch = npcLocationDto.getPitch();
 
         // x,y,z,yaw,pitch 위치에 npc 스폰
-        //Bukkit.getPlayer("Dawn__L").teleport(new Location(Bukkit.getWorld("world"), x, y, z));
-//        Bukkit.getPlayer("Dawn__L").sendMessage("x : " + x + " y : " + y + " z : " + z);
-        //Bukkit.getPlayer("Dawn__L").sendMessage(message);
 
         // 전체 알림
-        //String message = npcLocationDto.getLocation() + "에 방랑 상인이 등장했습니다!!";
+//        String message = npcLocationDto.getLocation() + "에 방랑 상인이 등장했습니다!!";
 //        VelocityClient.getInstance().getConnectClient().send(BroadcastStringVelocityListener.class, message);
 //        Bukkit.broadcastMessage(message);
     }

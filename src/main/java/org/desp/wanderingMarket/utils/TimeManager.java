@@ -11,6 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.desp.wanderingMarket.WanderingMarket;
 import org.desp.wanderingMarket.database.ItemDataRepository;
 import org.desp.wanderingMarket.database.ItemPurchaseMemoryLogRepository;
+import org.desp.wanderingMarket.gui.ItemPurchaseConfirmGUI;
 import org.desp.wanderingMarket.gui.WanderingMarketGUI;
 
 public class TimeManager {
@@ -30,8 +31,7 @@ public class TimeManager {
 
     public void startMarketRotationTask() {
         int resetTime = getRandomTimeInterval();
-        //Bukkit.getPlayer("Dawn__L").sendMessage("Starting Market Rotation Task : " + resetTime);
-        remainingTime = 600;
+        remainingTime = 10;
 
         // npc 등장하는 로직
         NPCWarpManager.NPCSpawner();
@@ -45,7 +45,7 @@ public class TimeManager {
             public void run() {
                 startMarketRotationTask();
             }
-        }.runTaskLater(WanderingMarket.getInstance(), 20L * resetTime);  // resetTime초 후에 다시 실행
+        }.runTaskLater(WanderingMarket.getInstance(), 20L * resetTime);  // resetTime 초 후에 다시 실행
     }
 
     public void startCountdown() {
@@ -55,11 +55,10 @@ public class TimeManager {
                 if (remainingTime > 0) {
                     remainingTime--;
                 }
-                //Bukkit.getPlayer("Dawn__L").sendMessage("remainingTime = " + remainingTime);
                 if (remainingTime == 0) {
                     for (Player player : Bukkit.getOnlinePlayers()) {
                         Inventory topInv = player.getOpenInventory().getTopInventory();
-                        if (topInv.getHolder() instanceof WanderingMarketGUI) {
+                        if (topInv.getHolder() instanceof WanderingMarketGUI || topInv.getHolder() instanceof ItemPurchaseConfirmGUI) {
                             player.closeInventory();
                         }
                     }
@@ -73,8 +72,8 @@ public class TimeManager {
 
     private int getRandomTimeInterval() {
         Random rand = new Random();
-        int[] possibleIntervals = {3600, 7200, 10800}; // 1시간, 2시간, 3시간
-        //int[] possibleIntervals = {4, 5, 10}; // 1시간, 2시간, 3시간
+        //int[] possibleIntervals = {3600, 7200, 10800}; // 1시간, 2시간, 3시간
+        int[] possibleIntervals = {20, 30, 15}; // 테스트용 20, 30, 15초
         return possibleIntervals[rand.nextInt(possibleIntervals.length)];
     }
 }
