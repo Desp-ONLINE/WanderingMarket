@@ -63,7 +63,7 @@ public class TimeManager {
                         }
                     }
                     // npc 제거하는 로직
-                    NPCWarpManager.NPCDelete();
+                    NPCWarpManager.resetNPCLocation();
                     this.cancel();
                 }
             }

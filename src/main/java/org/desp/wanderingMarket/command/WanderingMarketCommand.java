@@ -18,7 +18,6 @@ public class WanderingMarketCommand implements CommandExecutor {
         if (!player.isOp()) {
             return false;
         }
-
         WanderingMarketGUI wanderingMarketGUI = new WanderingMarketGUI(player);
         player.openInventory(wanderingMarketGUI.getInventory());
         return false;

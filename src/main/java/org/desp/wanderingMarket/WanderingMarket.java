@@ -9,7 +9,9 @@ import org.desp.wanderingMarket.database.NPCLocationDataRepository;
 import org.desp.wanderingMarket.database.PlayerDataRepository;
 import org.desp.wanderingMarket.listener.ItemConfirmListener;
 import org.desp.wanderingMarket.listener.ItemSelectListener;
+import org.desp.wanderingMarket.listener.NPCListener;
 import org.desp.wanderingMarket.listener.PlayerJoinAndQuitListener;
+import org.desp.wanderingMarket.utils.NPCWarpManager;
 import org.desp.wanderingMarket.utils.TimeManager;
 
 public final class WanderingMarket extends JavaPlugin {
@@ -23,19 +25,23 @@ public final class WanderingMarket extends JavaPlugin {
         NPCLocationDataRepository.getInstance().loadAllPlayerData();
         ItemDataRepository.getInstance().loadItemData();
 
-        TimeManager.getInstance().startMarketRotationTask();
-
         PlayerDataRepository.getInstance().loadAllPlayerData();
 
         Bukkit.getPluginManager().registerEvents(new PlayerJoinAndQuitListener(), this);
         Bukkit.getPluginManager().registerEvents(new ItemSelectListener(), this);
         Bukkit.getPluginManager().registerEvents(new ItemConfirmListener(), this);
+        Bukkit.getPluginManager().registerEvents(new NPCListener(), this);
 
         getCommand("방랑상인상점").setExecutor(new WanderingMarketCommand());
+
+        NPCWarpManager.createNPC();
+
+        TimeManager.getInstance().startMarketRotationTask();
     }
 
     @Override
     public void onDisable() {
         PlayerDataRepository.getInstance().saveAllPlayerData();
+        NPCWarpManager.resetNPCLocation();
     }
 }
