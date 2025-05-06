@@ -8,10 +8,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.Getter;
+import net.citizensnpcs.api.npc.NPC;
 import org.bson.Document;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.desp.wanderingMarket.WanderingMarket;
 import org.desp.wanderingMarket.dto.ItemDataDto;
+import org.desp.wanderingMarket.dto.NPCLocationDto;
+import org.desp.wanderingMarket.utils.NPCWarpManager;
 
 public class ItemDataRepository {
 
@@ -50,18 +53,8 @@ public class ItemDataRepository {
         }
     }
 
-//    public void startMarketRotationTask() {
-//        new BukkitRunnable() {
-//            @Override
-//            public void run() {
-//                getShuffledRandomItemDataList();
-//                ItemPurchaseMemoryLogRepository.getInstance().resetPurchaseMemoryLog();
-//            }
-//        }.runTaskTimer(WanderingMarket.getInstance(), 0L, 20L * 60 * 1); // 30분 간격
-//    }
-
     public void getShuffledRandomItemDataList() {
-        int randomSize = ThreadLocalRandom.current().nextInt(1, itemDataList.size());
+        int randomSize = ThreadLocalRandom.current().nextInt(1, 9);
 
         List<ItemDataDto> pool = new ArrayList<>(itemDataList.values());
         List<ItemDataDto> result = new ArrayList<>();

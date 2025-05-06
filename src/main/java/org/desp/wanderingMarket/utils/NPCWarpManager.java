@@ -17,6 +17,7 @@ import org.desp.wanderingMarket.dto.NPCLocationDto;
 
 public class NPCWarpManager {
 
+    @Getter
     private static NPCLocationDto currentNPCDto;
     @Getter
     private static NPC wanderingNPC;
