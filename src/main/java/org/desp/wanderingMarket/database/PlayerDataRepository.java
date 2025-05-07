@@ -98,9 +98,4 @@ public class PlayerDataRepository {
             );
         }
     }
-
-    // 캐시의 모든 플레이어 데이터 가져오기
-    public Map<String, PlayerDataDto> getPlayerListCache() {
-        return playerListCache;
-    }
 }

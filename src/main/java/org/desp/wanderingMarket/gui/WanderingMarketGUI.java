@@ -2,8 +2,6 @@ package org.desp.wanderingMarket.gui;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Bukkit;
@@ -104,20 +102,18 @@ public class WanderingMarketGUI implements InventoryHolder {
     }
 
     private void refreshTimeItem() {
-        ItemStack timeViewer = new ItemStack(Material.BLUE_STAINED_GLASS_PANE);
+        ItemStack timeViewer = new ItemStack(Material.CLOCK);
         ItemMeta timeItemMeta = timeViewer.getItemMeta();
+        timeItemMeta.setDisplayName("상인이 떠나기까지 남은시간..");
 
         if (timeItemMeta != null) {
             List<String> lore = new ArrayList<>();
-            // 여기만 수정하면 됩다
 
             int remainingTime = TimeManager.getInstance().getRemainingTime();
             int minutes = remainingTime / 60;
             int seconds = remainingTime % 60;
             lore.add("§f남은 시간: §e" + minutes + "분 " + seconds + "초");
 
-//            int remainingTime = TimeManager.getInstance().getRemainingTime();
-//            lore.add("§f남은 시간: §e" + remainingTime + "초");
             timeItemMeta.setLore(lore);
             timeViewer.setItemMeta(timeItemMeta);
         }

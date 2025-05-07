@@ -2,7 +2,6 @@ package org.desp.wanderingMarket.utils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.Date;
 
 public class DateUtil {
@@ -14,8 +13,4 @@ public class DateUtil {
         return dateTime;
     }
 
-    public static String getCurrentDate() {
-        LocalDate today = LocalDate.now();
-        return today.toString(); // "yyyy-MM-dd" 형식
-    }
 }

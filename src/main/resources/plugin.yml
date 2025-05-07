@@ -6,4 +6,3 @@ depend: [Citizens]
 commands:
   방랑상인상점:
     aliases: ['qkdfkdtkddlstkdwja']
-  방랑상인삭제:

@@ -1,7 +1,6 @@
 package org.desp.wanderingMarket.utils;
 
-import com.binggre.velocitysocketclient.VelocityClient;
-import com.binggre.velocitysocketclient.listener.BroadcastStringVelocityListener;
+import java.time.LocalTime;
 import java.util.Random;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -30,8 +29,16 @@ public class TimeManager {
     }
 
     public void startMarketRotationTask() {
+        LocalTime now = LocalTime.now();
+        LocalTime start = LocalTime.NOON; // 12:00
+        LocalTime end = LocalTime.of(23, 59, 59); // 23:59:59.000
+
+        if (now.isBefore(start) || !now.isBefore(end)) {
+            // 낮 12시 이전 또는 자정 이후면 실행하지 않음
+            return;
+        }
         int resetTime = getRandomTimeInterval();
-        remainingTime = 10;
+        remainingTime = 600;
 
         // npc 등장하는 로직
         NPCWarpManager.NPCSpawner();
@@ -72,8 +79,7 @@ public class TimeManager {
 
     private int getRandomTimeInterval() {
         Random rand = new Random();
-        //int[] possibleIntervals = {3600, 7200, 10800}; // 1시간, 2시간, 3시간
-        int[] possibleIntervals = {20, 30, 15}; // 테스트용 20, 30, 15초
+        int[] possibleIntervals = {7200, 10800}; // 2시간, 3시간
         return possibleIntervals[rand.nextInt(possibleIntervals.length)];
     }
 }

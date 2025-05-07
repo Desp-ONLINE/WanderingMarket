@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.desp.wanderingMarket.gui.WanderingMarketGUI;
 import org.jetbrains.annotations.NotNull;
+import org.swlab.etcetera.Util.CommandUtil;
 
 public class WanderingMarketCommand implements CommandExecutor {
     @Override

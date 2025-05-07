@@ -3,14 +3,12 @@ package org.desp.wanderingMarket.database;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.Getter;
 import org.bson.Document;
-import org.desp.wanderingMarket.dto.ItemDataDto;
 import org.desp.wanderingMarket.dto.NPCLocationDto;
 
 public class NPCLocationDataRepository {
@@ -53,7 +51,7 @@ public class NPCLocationDataRepository {
 
     public NPCLocationDto getRandomNpcLocationDto() {
         npcLocationDtoList = new ArrayList<>(npcLocationMap.values());
-        Collections.shuffle(npcLocationDtoList); // 무작위 섞기
+        Collections.shuffle(npcLocationDtoList);
         return npcLocationDtoList.getFirst();
     }
 }

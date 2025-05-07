@@ -1,15 +1,13 @@
 package org.desp.wanderingMarket.utils;
 
+import com.binggre.binggreapi.utils.ColorManager;
 import com.binggre.velocitysocketclient.VelocityClient;
 import com.binggre.velocitysocketclient.listener.BroadcastStringVelocityListener;
-import java.util.Map;
 import lombok.Getter;
-import net.citizensnpcs.Citizens;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.desp.wanderingMarket.database.NPCLocationDataRepository;
@@ -56,20 +54,29 @@ public class NPCWarpManager {
             wanderingNPC.teleport(targetLocation, TeleportCause.UNKNOWN);
         }
 
+        String village = "";
         // 전체 알림
-        String message = npcLocationDto.getLocation() + "에 방랑 상인이 등장했습니다!!";
-        Bukkit.getPlayer("Dawn__L").sendMessage(message);
-        //Bukkit.getPlayer("Dawn__L").teleport(targetLocation);
-//        VelocityClient.getInstance().getConnectClient().send(BroadcastStringVelocityListener.class, message);
+        if ("엘븐하임".equals(npcLocationDto.getLocation())){
+            village = "#A4F454엘#8CE682븐#73D7B0하#5BC9DE임";
+        } else if ("칼리마".equals(npcLocationDto.getLocation())){
+            village = "#C8AB30칼#D3A046리#DE955B마";
+        } else if ("인페리움".equals(npcLocationDto.getLocation())){
+            village = "#D23939인#D86C66페#DF9E93리#E5D1C0움";
+        }
 
-//        Bukkit.broadcastMessage(message);
+        String format = ColorManager.format(village);
+
+        String message = format + "§f에 방랑 상인이 등장했습니다!!";
+
+        VelocityClient.getInstance().getConnectClient().send(BroadcastStringVelocityListener.class, message);
+        Bukkit.broadcastMessage(message);
     }
 
     public static void resetNPCLocation() {
-        System.out.println("NPC reset Location");
-//        Bukkit.getPlayer("Dawn__L").teleport(new Location(Bukkit.getWorld("world"), 151.472, 258.00000, -715.576));
-        String message = "방랑상인이 사라졌습니다";
-        Bukkit.getPlayer("Dawn__L").sendMessage(message);
+        String message = "§c방랑 상인이 사라졌습니다.. 다른 곳에 등장할 수도 있어요";
+
+        VelocityClient.getInstance().getConnectClient().send(BroadcastStringVelocityListener.class, message);
+        Bukkit.broadcastMessage(message);
         wanderingNPC.teleport(new Location(Bukkit.getWorld("world"), 101.529, 266.0000, -731.620), TeleportCause.UNKNOWN);
     }
 }

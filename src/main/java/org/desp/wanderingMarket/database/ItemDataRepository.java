@@ -8,13 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.Getter;
-import net.citizensnpcs.api.npc.NPC;
 import org.bson.Document;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.desp.wanderingMarket.WanderingMarket;
 import org.desp.wanderingMarket.dto.ItemDataDto;
-import org.desp.wanderingMarket.dto.NPCLocationDto;
-import org.desp.wanderingMarket.utils.NPCWarpManager;
 
 public class ItemDataRepository {
 

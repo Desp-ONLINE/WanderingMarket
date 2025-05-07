@@ -1,15 +1,8 @@
 package org.desp.wanderingMarket.database;
 
-import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Accumulators;
-import com.mongodb.client.model.Aggregates;
-import com.mongodb.client.model.Filters;
-import java.util.Arrays;
 import org.bson.Document;
-import org.bukkit.entity.Player;
 import org.desp.wanderingMarket.dto.ItemPurchaseLogDto;
-import org.desp.wanderingMarket.utils.DateUtil;
 
 public class ItemPurchaseLogRepository {
 
