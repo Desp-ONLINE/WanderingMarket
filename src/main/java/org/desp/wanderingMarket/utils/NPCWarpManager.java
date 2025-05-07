@@ -75,8 +75,25 @@ public class NPCWarpManager {
     public static void resetNPCLocation() {
         String message = "§c방랑 상인이 사라졌습니다.. 다른 곳에 등장할 수도 있어요";
 
+        if (wanderingNPC == null) {
+            System.out.println("[ERROR] wanderingNPC is Null SIbal");
+        }
+        if (!wanderingNPC.isSpawned()) {
+            System.out.println("[ERROR] NPC가 소환되지 않았습니다.");
+        }
+
+
         VelocityClient.getInstance().getConnectClient().send(BroadcastStringVelocityListener.class, message);
         Bukkit.broadcastMessage(message);
-        wanderingNPC.teleport(new Location(Bukkit.getWorld("world"), 101.529, 266.0000, -731.620), TeleportCause.UNKNOWN);
+        Location targetLocation = new Location(
+                Bukkit.getWorld("world"),
+                101.529,
+                266.0000,
+                -731.620,
+                (float) -175.11,
+                (float) 31.35
+        );
+        targetLocation.getChunk().load();
+        wanderingNPC.teleport(targetLocation, TeleportCause.UNKNOWN);
     }
 }
