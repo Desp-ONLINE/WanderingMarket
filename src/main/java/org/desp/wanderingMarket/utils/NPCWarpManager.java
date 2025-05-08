@@ -3,6 +3,7 @@ package org.desp.wanderingMarket.utils;
 import com.binggre.binggreapi.utils.ColorManager;
 import com.binggre.velocitysocketclient.VelocityClient;
 import com.binggre.velocitysocketclient.listener.BroadcastStringVelocityListener;
+import com.binggre.velocitysocketclient.listener.BroadcastTitleVelocityListener;
 import lombok.Getter;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
@@ -66,14 +67,24 @@ public class NPCWarpManager {
 
         String format = ColorManager.format(village);
 
-        String message = format + "§f에 방랑 상인이 등장했습니다!!";
+        String message = "§f  "+format + "§f에 방랑 상인이 출현했습니다!";
+        String divideLine = ColorManager.format("#FFB656§m                                                                §f");
+        String emptyLine = ColorManager.format("");
 
+        VelocityClient.getInstance().getConnectClient().send(BroadcastStringVelocityListener.class, divideLine);
+        VelocityClient.getInstance().getConnectClient().send(BroadcastStringVelocityListener.class, emptyLine);
         VelocityClient.getInstance().getConnectClient().send(BroadcastStringVelocityListener.class, message);
+        VelocityClient.getInstance().getConnectClient().send(BroadcastStringVelocityListener.class, emptyLine);
+        VelocityClient.getInstance().getConnectClient().send(BroadcastStringVelocityListener.class, divideLine);
+        Bukkit.broadcastMessage(divideLine);
+        Bukkit.broadcastMessage(emptyLine);
         Bukkit.broadcastMessage(message);
+        Bukkit.broadcastMessage(emptyLine);
+        Bukkit.broadcastMessage(divideLine);
     }
 
     public static void resetNPCLocation() {
-        String message = "§c방랑 상인이 사라졌습니다.. 다른 곳에 등장할 수도 있어요";
+        String message = "§c방랑 상인이 사라졌습니다.. 다른 곳에 등장할 수도 있어요.";
 
         if (wanderingNPC == null) {
             System.out.println("[ERROR] wanderingNPC is Null SIbal");
