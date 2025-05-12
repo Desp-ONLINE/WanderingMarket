@@ -4,6 +4,8 @@ import com.binggre.binggreapi.utils.ColorManager;
 import com.binggre.velocitysocketclient.VelocityClient;
 import com.binggre.velocitysocketclient.listener.BroadcastStringVelocityListener;
 import com.binggre.velocitysocketclient.listener.BroadcastTitleVelocityListener;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import lombok.Getter;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
@@ -106,5 +108,7 @@ public class NPCWarpManager {
         );
         targetLocation.getChunk().load();
         wanderingNPC.teleport(targetLocation, TeleportCause.UNKNOWN);
+        String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        System.out.println("npc 위치 초기화 완료 시간: " + currentTime);
     }
 }
