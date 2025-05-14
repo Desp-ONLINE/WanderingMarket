@@ -41,6 +41,9 @@ public class TimeManager {
             return;
         }
         int resetTime = getRandomTimeInterval();
+        System.out.println("==============================");
+        System.out.println("다음 상인 등장 시간 = " + resetTime);
+        System.out.println("==============================");
         remainingTime = 600;
 
         NPCWarpManager.NPCSpawner();
