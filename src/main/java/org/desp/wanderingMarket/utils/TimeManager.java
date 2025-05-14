@@ -36,7 +36,8 @@ public class TimeManager {
         LocalTime end = LocalTime.of(23, 59, 59); // 23:59:59.000
 
         if (now.isBefore(start) || !now.isBefore(end)) {
-            // 낮 12시 이전 또는 자정 이후면 실행하지 않음
+            // 낮 12시 이전 또는 자정 이후면 실행하지 않음 12시간 뒤에 예약
+            runTaskLater(this::startMarketRotationTask, 12 * 3600 * 20);
             return;
         }
         int resetTime = getRandomTimeInterval();
