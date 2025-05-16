@@ -1,7 +1,9 @@
 package org.desp.wanderingMarket.utils;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Random;
 
 import lombok.Getter;
@@ -11,6 +13,8 @@ import org.bukkit.inventory.Inventory;
 import org.desp.wanderingMarket.WanderingMarket;
 import org.desp.wanderingMarket.database.ItemDataRepository;
 import org.desp.wanderingMarket.database.ItemPurchaseMemoryLogRepository;
+import org.desp.wanderingMarket.database.NPCLogRepository;
+import org.desp.wanderingMarket.dto.NPCLogDto;
 import org.desp.wanderingMarket.gui.ItemPurchaseConfirmGUI;
 import org.desp.wanderingMarket.gui.WanderingMarketGUI;
 
@@ -41,12 +45,25 @@ public class TimeManager {
             return;
         }
         int resetTime = getRandomTimeInterval();
-        System.out.println("==============================");
-        System.out.println("다음 상인 등장 시간 = " + resetTime);
-        System.out.println("==============================");
+
         remainingTime = 600;
 
         NPCWarpManager.NPCSpawner();
+
+        String nowStr = now.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+        LocalTime futureTime = now.plusSeconds(resetTime);
+        String futureTimeStr = futureTime.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+        LocalDate today = LocalDate.now();
+        String dateStr = today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        NPCLogDto npcLogDto = NPCLogDto.builder()
+                .date(dateStr)
+                .currentTime(nowStr)
+                .nextTime(futureTimeStr)
+                .village(NPCWarpManager.getCurrentNPCDto().getLocation())
+                .build();
+
+        NPCLogRepository.getInstance().insertNPCLog(npcLogDto);
 
         ItemDataRepository.getInstance().getShuffledRandomItemDataList();
         ItemPurchaseMemoryLogRepository.getInstance().resetPurchaseMemoryLog();

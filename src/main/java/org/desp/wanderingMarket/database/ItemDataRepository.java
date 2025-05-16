@@ -49,7 +49,7 @@ public class ItemDataRepository {
     }
 
     public void getShuffledRandomItemDataList() {
-        int randomSize = ThreadLocalRandom.current().nextInt(1, 9);
+        int randomSize = ThreadLocalRandom.current().nextInt(3, 9);
 
         List<ItemDataDto> pool = new ArrayList<>(itemDataList.values());
         List<ItemDataDto> result = new ArrayList<>();
